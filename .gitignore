@@ -42,3 +42,5 @@ testem.log
 Thumbs.db
 /.vs
 /projects/auth-angular/node_modules
+/package-lock.json
+/projects/auth-angular/package-lock.json

@@ -1,13 +1,10 @@
 {
   "name": "@liquescens/auth-angular",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "peerDependencies": {
+    "@liquescens/auth-js": "^0.0.7",
     "@angular/common": "^19.1.0",
-    "@angular/core": "^19.1.0",
-    "@liquescens/auth-js": "file:../../../auth-js/dist/liquescens-auth-js-0.0.1.tgz"
-  },
-  "devDependencies": {
-    "@liquescens/auth-js": "file:../../../auth-js/dist/liquescens-auth-js-0.0.1.tgz"
+    "@angular/core": "^19.1.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

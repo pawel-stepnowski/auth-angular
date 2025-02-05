@@ -11,8 +11,8 @@ export class Authentication
 {
     configuration: IAuthenticationConfiguration;
     service: AuthenticationService;
-    private client_info = new BehaviorSubject<Awaited<ReturnType<Auth.Authentication['getClientInfo']>> | null>(null);
-    client_info$ = this.client_info.asObservable();
+    private session_info = new BehaviorSubject<Awaited<ReturnType<Auth.Authentication['getSessionInfo']>> | null>(null);
+    session_info$ = this.session_info.asObservable();
     private active_session = new BehaviorSubject<SessionItem | undefined>(undefined);
     active_session$ = this.active_session.asObservable();
     sessions$: Observable<SessionItem[]>;
@@ -26,8 +26,8 @@ export class Authentication
     )
     {
         this.configuration = configuration;
-        this.service = new AuthenticationService(this.configuration.id, this.configuration.host);
-        this.sessions$ = this.client_info$.pipe(map(info => 
+        this.service = new AuthenticationService(this.configuration.host);
+        this.sessions$ = this.session_info$.pipe(map(info => 
         { 
             const items = [];
             if (info) for (const session of Object.values(info.sessions))
@@ -45,7 +45,7 @@ export class Authentication
         {
             this.state = 'in-process';
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await this._requestClientInfo();
+            await this._requestSessionInfo();
         }
         catch (exception)
         {
@@ -57,7 +57,7 @@ export class Authentication
     {
         await this.service.updateProfile(data);
         await this.requestProfile();
-        await this._requestClientInfo();
+        await this._requestSessionInfo();
     }
 
     async requestProfile()
@@ -72,9 +72,9 @@ export class Authentication
         try
         {
             this.state = 'in-process';
-            const active_session_id = this.client_info.value?.client.active_session_id;
+            const active_session_id = this.session_info.value?.client.active_session_id;
             if (active_session_id) await this.service.signOut(active_session_id);
-            await this._requestClientInfo();
+            await this._requestSessionInfo();
         }
         catch (exception)
         {
@@ -92,7 +92,7 @@ export class Authentication
             this.active_session.next(undefined);
             this.service.setActiveSession(session.id);
             await new Promise(resolve => setTimeout(resolve, 1000));
-            this._requestClientInfo();
+            this._requestSessionInfo();
             this.requestProfile();
         }
         catch (exception)
@@ -101,12 +101,12 @@ export class Authentication
         }
     }
 
-    async _requestClientInfo()
+    async _requestSessionInfo()
     {
         try
         {
-            const user_info = await this.service.getClientInfo();
-            this.client_info.next(user_info);
+            const user_info = await this.service.getSessionInfo();
+            this.session_info.next(user_info);
             const sessions = Object.values(user_info.sessions);
             if (sessions.length === 0)
             {
@@ -123,17 +123,17 @@ export class Authentication
         catch (exception)
         {
             this.state = 'error';
-            this.client_info.next(null);
+            this.session_info.next(null);
         }
     }
 
     _createSessionInfoItem(session: Auth.Session | undefined)
     {
         if (!session) return;
-        if (!this.client_info.value) return;
-        const identity = this.client_info.value.identities[session.identity_id];
+        if (!this.session_info.value) return;
+        const identity = this.session_info.value.identities[session.identity_id];
         if (!identity) return;
-        const account = this.client_info.value.accounts[identity.account_id];
+        const account = this.session_info.value.accounts[identity.account_id];
         if (!account) return;
         return { session, identity, account };
     }
