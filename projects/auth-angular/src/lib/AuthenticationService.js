@@ -8,7 +8,7 @@ export class AuthenticationService extends Auth.Authentication
     async getProfile()
     {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        const response = await fetch(`${this.host}/profile`, { credentials: 'include' });
+        const response = await fetch(`${this.configuration.base_uri}/profile`, { credentials: 'include' });
         if (response.status !== 200) throw new Error('TODO');
         return await response.json();
     }
@@ -18,7 +18,7 @@ export class AuthenticationService extends Auth.Authentication
      */
     async updateProfile(data)
     {
-        const response = await fetch(`${this.host}/profile`, { method: 'PUT', credentials: 'include', body: JSON.stringify(data) });
+        const response = await fetch(`${this.configuration.base_uri}/profile`, { method: 'PUT', credentials: 'include', body: JSON.stringify(data) });
         if (response.status !== 200) throw new Error('TODO');
     }
 }

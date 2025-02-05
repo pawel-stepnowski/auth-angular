@@ -1,8 +1,8 @@
 {
   "name": "@liquescens/auth-angular",
-  "version": "0.0.4",
+  "version": "0.0.8",
   "peerDependencies": {
-    "@liquescens/auth-js": "^0.0.7",
+    "@liquescens/auth-js": "^0.0.9",
     "@angular/common": "^19.1.0",
     "@angular/core": "^19.1.0"
   },
